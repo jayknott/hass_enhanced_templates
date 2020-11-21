@@ -1,0 +1,105 @@
+#################################################
+### Constants that need to be changed per project
+#################################################
+
+# Title of the Integration
+TITLE = "Enhanced Templates"
+
+DEFAULT_AREA_ICON = "mdi:square-rounded-outline"
+
+###########################################
+### These constants should not be touched.
+###########################################
+
+DOMAIN = f"{TITLE.lower().replace(' ', '_').replace('-', '_')}"
+
+PLATFORM_AUTOMATION = "automation"
+PLATFORM_BINARY_SENSOR = "binary_sensor"
+PLATFORM_GROUP = "group"
+PLATFORM_INPUT_BOOLEAN = "input_boolean"
+PLATFORM_INPUT_NUMBER = "input_number"
+PLATFORM_INPUT_SELECT = "input_select"
+PLATFORM_INPUT_TEXT = "input_text"
+
+BUILT_IN_AREA_ICON = "area_icon"
+BUILT_IN_AREA_NAME = "area_name"
+BUILT_IN_AREA_SELECT = "area_select"
+BUILT_IN_AREA_SELECTED = "selected_area"
+BUILT_IN_AREA_SORT_ORDER = "area_sort_order"
+BUILT_IN_AREA_VISIBLE = "area_visible"
+BUILT_IN_AUTOMATION_AREA_CHANGED = "automation_area_changed"
+BUILT_IN_AUTOMATION_ENTITY_CHANGED = "automation_entity_changed"
+BUILT_IN_AUTOMATION_POPULATE_AREA_SELECT = "automation_populate_area_select"
+BUILT_IN_AUTOMATION_POPULATE_ENTITY_SELECT = "automation_populate_entity_select"
+BUILT_IN_ENTITY_AREA_SELECT = "entity_area_select"
+BUILT_IN_ENTITY_ID_SELECT = "entity_id_select"
+BUILT_IN_ENTITY_SELECTED = "selected_entity"
+BUILT_IN_ENTITY_SORT_ORDER = "entity_sort_order"
+BUILT_IN_ENTITY_TYPE_SELECT = "entity_type_select"
+BUILT_IN_ENTITY_VISIBLE = "entity_visible"
+
+BUILT_IN_ENTITY_IDS = {
+    BUILT_IN_AREA_ICON: f"{PLATFORM_INPUT_TEXT}.{DOMAIN}_{BUILT_IN_AREA_ICON}",
+    BUILT_IN_AREA_NAME: f"{PLATFORM_INPUT_TEXT}.{DOMAIN}_{BUILT_IN_AREA_NAME}",
+    BUILT_IN_AREA_SELECT: f"{PLATFORM_INPUT_SELECT}.{DOMAIN}_{BUILT_IN_AREA_SELECT}",
+    BUILT_IN_AREA_SELECTED: f"{PLATFORM_BINARY_SENSOR}.{DOMAIN}_{BUILT_IN_AREA_SELECTED}",
+    BUILT_IN_AREA_SORT_ORDER: f"{PLATFORM_INPUT_NUMBER}.{DOMAIN}_{BUILT_IN_AREA_SORT_ORDER}",
+    BUILT_IN_AREA_VISIBLE: f"{PLATFORM_INPUT_BOOLEAN}.{DOMAIN}_{BUILT_IN_AREA_VISIBLE}",
+    BUILT_IN_AUTOMATION_AREA_CHANGED: f"{PLATFORM_AUTOMATION}.{DOMAIN}_{BUILT_IN_AUTOMATION_AREA_CHANGED}",
+    BUILT_IN_AUTOMATION_ENTITY_CHANGED: f"{PLATFORM_AUTOMATION}.{DOMAIN}_{BUILT_IN_AUTOMATION_ENTITY_CHANGED}",
+    BUILT_IN_AUTOMATION_POPULATE_AREA_SELECT: f"{PLATFORM_AUTOMATION}.{DOMAIN}_{BUILT_IN_AUTOMATION_POPULATE_AREA_SELECT}",
+    BUILT_IN_AUTOMATION_POPULATE_ENTITY_SELECT: f"{PLATFORM_AUTOMATION}.{DOMAIN}_{BUILT_IN_AUTOMATION_POPULATE_ENTITY_SELECT}",
+    BUILT_IN_ENTITY_AREA_SELECT: f"{PLATFORM_INPUT_SELECT}.{DOMAIN}_{BUILT_IN_ENTITY_AREA_SELECT}",
+    BUILT_IN_ENTITY_ID_SELECT: f"{PLATFORM_INPUT_SELECT}.{DOMAIN}_{BUILT_IN_ENTITY_ID_SELECT}",
+    BUILT_IN_ENTITY_SELECTED: f"{PLATFORM_BINARY_SENSOR}.{DOMAIN}_{BUILT_IN_ENTITY_SELECTED}",
+    BUILT_IN_ENTITY_SORT_ORDER: f"{PLATFORM_INPUT_NUMBER}.{DOMAIN}_{BUILT_IN_ENTITY_SORT_ORDER}",
+    BUILT_IN_ENTITY_TYPE_SELECT: f"{PLATFORM_INPUT_SELECT}.{DOMAIN}_{BUILT_IN_ENTITY_TYPE_SELECT}",
+    BUILT_IN_ENTITY_VISIBLE: f"{PLATFORM_INPUT_BOOLEAN}.{DOMAIN}_{BUILT_IN_ENTITY_VISIBLE}",
+}
+
+CONF_ACTION = "action"
+CONF_ADDERS = "adders"
+CONF_AREA = "area"
+CONF_AREA_NAME = "area_name"
+CONF_AREAS = "areas"
+CONF_COUNT = "count"
+CONF_COUNTERS = "counters"
+CONF_CREATE = "create"
+CONF_BUILT_IN_ENTITIES = "built_in_entities"
+CONF_CONFIG = "config"
+CONF_DISABLED = "disabled"
+CONF_ENTITIES = "entities"
+CONF_ENTITY = "entity"
+CONF_ENTITY_PLATFORM = "entity_platform"
+CONF_ENTITY_TYPE = "entity_type"
+CONF_MISSING_RESOURCES = "missing_resources"
+CONF_ORIGINAL_AREA_ID = "original_area_id"
+CONF_ORIGINAL_ENTITY_TYPE = "original_entity_type"
+CONF_ORIGINAL_NAME = "original_name"
+CONF_ORIGINAL_TYPE = "original_type"
+CONF_REMOVE = "remove"
+CONF_SECURITY = "security"
+CONF_SELECTED_AREA = "selected_area"
+CONF_SELECTED_ENTITY = "selected_entity"
+CONF_SOMETHING_ON = "something_on"
+CONF_SORT_ORDER = "sort_order"
+CONF_TITLE = "title"
+CONF_TRACKED_ENTITY_COUNT = "tracked_entity_count"
+CONF_TRANSLATIONS = "translations"
+CONF_UPDATE = "update"
+CONF_VALUE = "value"
+CONF_VISIBLE = "visible"
+
+DEFAULT_SORT_ORDER = 500000
+DEFAULT_SORT_ORDER_MAX = 999999
+DEFAULT_SORT_ORDER_MIN = 1
+
+EVENT_SETTINGS_CHANGED = f"{DOMAIN}_settings_changed"
+EVENT_AREA_SETTINGS_CHANGED = f"{DOMAIN}_area_settings_changed"
+EVENT_ENTITY_SETTINGS_CHANGED = f"{DOMAIN}_entity_settings_changed"
+EVENT_TRIGGER_AREA_AUTOMATIONS = f"{DOMAIN}_trigger_area_automations"
+EVENT_TRIGGER_ENTITY_AUTOMATIONS = f"{DOMAIN}_trigger_entity_automations"
+
+LOVELACE = "lovelace"
+
+TRANSLATIONS_PATH = "translations/"

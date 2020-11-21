@@ -1,0 +1,152 @@
+# Translation by Jason
+
+title: Custom Dashboard
+
+automation:
+  one: Automation
+  other: Automation Scripts
+battery:
+  all: All Batteries
+  all_off: All batteries are at sufficient levels
+  charging: Charging
+  none: No batteries to display
+  one: Battery
+  other: Batteries
+camera:
+  one: Camera
+  other: Cameras
+climate:
+  one: Climate
+  other: Climates
+  # HVAC modes
+  cool: Cool
+  head: Heat
+  heat_cool: Auto
+  off: 'Off'
+color:
+  one: Color
+  other: Colors
+  # Color names
+  black: Black
+  blue: Blue
+  daylight: Daylight
+  dodger_blue: Dodger
+  cool: Cool
+  green: Green
+  red: Red
+  warm: Warm
+  white: White
+device:
+  all: All Devices
+  all_off: All devices are off
+  none: No devices to display
+  one: Device
+  other: Devices
+device_tracker:
+  one: Device Tracker
+  other: Device Trackers
+doorbell:
+  one: Doorbell
+  other: Doorbells
+doorbell_ding:
+  one: Ding
+  other: Dings
+error:
+  one: Error
+  other: Errors
+group:
+  one: Group
+  other: Groups
+home:
+  one: Home
+  other: Homes
+humidity:
+  one: Humidity
+  other: Humidities
+icon:
+  one: Icon
+  other: Icons
+light:
+  all: All Lights
+  all_off: All lights are off
+  none: No lights to display
+  one: Light
+  other: Lights
+lock:
+  one: Lock
+  other: Locks
+media_player:
+  one: Media Player
+  other: Media Players
+motion:
+  one: Motion
+  other: Motions
+motion_sensor:
+  one: Motion Sensor
+  other: Motion Sensors
+name:
+  one: Name
+  other: Names
+occupancy:
+  one: Occupancy
+  other: Occupancies
+occupancy_sensor:
+  one: Occupancy Sensor
+  other: Occupancy Sensors
+person:
+  one: Person
+  other: People
+remote:
+  one: Remote
+  other: Remotes
+room:
+  one: Room
+  other: Rooms
+save:
+  one: Save
+  other: Saves
+script:
+  one: Script
+  other: Scripts
+security:
+  one: Security
+  other: Security
+sensor:
+  one: Sensor
+  other: Sensors
+setting:
+  areas_intro: >
+    Update settings for rooms (areas). After updating, you may need to
+    rebuild the counters from the settings menu to see your changes.
+  entities_intro: >
+    Update settings for devices (entities). After updating, you may need to
+    rebuild the counters from the settings menu to see your changes.
+  hidden: Hidden Devices
+  one: Setting
+  other: Settings
+  rebuild_counters: Rebuild Counters
+  unused: Unused Devices
+sort_order:
+  one: Sort Order
+  other: Sort Orders
+switch:
+  one: Switch
+  other: Switches
+temperature:
+  one: Temperature
+  other: Temperatures
+thermostat:
+  one: Thermostat
+  other: Thermostats
+type:
+  one: Type
+  other: Types
+visible:
+  one: Visible
+  other: Visible
+weather:
+  one: Weather
+  other: Weather
+zone:
+  one: Zone
+  other: Zones

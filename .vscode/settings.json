@@ -1,0 +1,12 @@
+{
+    "python.formatting.provider": "black",
+    "python.linting.flake8Enabled": true,
+    "python.pythonPath": "~/.pyenv/versions/3.8.6/bin/python",
+    "cSpell.words": [
+        "codeowners",
+        "hass",
+        "jayknott"
+    ],
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "ms-python.python"
+}
