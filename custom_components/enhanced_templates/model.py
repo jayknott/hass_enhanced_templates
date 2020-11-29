@@ -1,15 +1,39 @@
 """Base Integration class."""
-import re
-from custom_components.enhanced_templates.share import get_base
-import attr
 import logging
-from typing import Iterable, Optional
+from typing import Dict, Iterable, Optional, TypedDict
 
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.area_registry import AreaEntry
 
 from .const import DOMAIN
-from .registry import EntitySettingsRegistry, AreaSettingsRegistry
+
+
+class AreaSettingsEntry(TypedDict, total=False):
+    """Model for area settings stored in the store."""
+
+    name: str
+    icon: str
+    original_name: str
+    sort_order: int
+    visible: bool
+
+
+AreaSettingsRegistry = Dict[str, AreaSettingsEntry]
+
+
+class EntitySettingsEntry(TypedDict, total=False):
+    """Model for entity settings stored in the store."""
+
+    area_id: str
+    original_area_id: str
+    name: str
+    entity_type: str
+    original_entity_type: str
+    sort_order: int
+    visible: bool
+
+
+EntitySettingsRegistry = Dict[str, EntitySettingsEntry]
 
 
 class Configuration:
@@ -28,6 +52,5 @@ class IntegrationBase:
 
     area_registry: Iterable[AreaEntry] = []
     areas: AreaSettingsRegistry = []
-    # built_in_entities: Dict[str, Type[Entity]] = {}
     configuration: Configuration = None
     entities: EntitySettingsRegistry = []

@@ -23,7 +23,7 @@ class CustomDashboardFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             return self.async_abort(reason="single_instance_allowed")
 
         user_input_update = user_input if user_input is not None else {}
-        return self.async_create_entry(title={TITLE}, data=user_input_update)
+        return self.async_create_entry(title=TITLE, data=user_input_update)
 
     @staticmethod
     @callback

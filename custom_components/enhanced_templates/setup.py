@@ -4,7 +4,9 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.typing import ConfigType
 
 from .const import DOMAIN, TITLE
+from .events import setup_events
 from .registry import setup_registry
+from .services import setup_services
 from .settings import setup_settings
 from .share import get_base, get_configuration, get_log
 from .template import setup_template
@@ -23,10 +25,11 @@ async def setup_integration(hass: HomeAssistant) -> bool:
         )
         return False
 
-    create_task = hass.async_create_task
-    create_task(setup_registry())
-    create_task(setup_settings())
-    create_task(setup_template())
+    await setup_registry()
+    await setup_settings()
+    await setup_template()
+    await setup_events()
+    await setup_services()
 
     return True
 

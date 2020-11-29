@@ -1,0 +1,37 @@
+set_area:
+  description: "Update the settings for an area."
+  fields:
+    area_id:
+      description: "Id of the area to update."
+      example: "000202d999029dd0"
+    icon:
+      description: "Icon for the area."
+      example: "mdi:square"
+    name:
+      description: "The new name of the area."
+      example: "Guest Bedroom"
+    sort_order:
+      description: "Change the sort order for the area."
+      example: 1
+    visible:
+      description: "Show the area in the rooms grid."
+      example: False
+set_entity:
+  description: "Update the settings for an entity."
+  fields:
+    entity_id:
+      description: "Entity Id to update"
+      example: "light.living_room"
+    area_id:
+      description: "Id of the area to assign this entity to."
+      example: "000202d999029dd0"
+    sort_order:
+      description: "Change the sort order for the entity."
+      example: 1
+    entity_type:
+      description: "The type of device this entity represents."
+      example: "light"
+    visible:
+      description: "Show the entity in the room pages."
+      example: False
+
