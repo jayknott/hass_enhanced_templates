@@ -10,6 +10,7 @@ from .services import setup_services
 from .settings import setup_settings
 from .share import get_base, get_configuration, get_log
 from .template import setup_template
+from .yaml_parser import setup_yaml_parser
 
 
 async def setup_integration(hass: HomeAssistant) -> bool:
@@ -30,6 +31,7 @@ async def setup_integration(hass: HomeAssistant) -> bool:
     await setup_template()
     await setup_events()
     await setup_services()
+    await setup_yaml_parser()
 
     return True
 

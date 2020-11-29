@@ -1,5 +1,6 @@
 """Extend the functionality of the HA YAML parser."""
 from collections import OrderedDict
+from custom_components.enhanced_templates.const import YAML_TAG
 import io
 from io import StringIO
 import os
@@ -18,14 +19,16 @@ from homeassistant.helpers.template import TemplateEnvironment, _ENVIRONMENT
 from homeassistant.util.yaml import loader as hass_loader
 from homeassistant.components.lovelace import dashboard
 
-from .const import (
-    TRANSLATIONS_PATH,
-    JINJA_VARIABLE_TRANSLATE,
-    JINJA_VARIABLE_USER_ID,
-)
+# from .const import (
+#     TRANSLATIONS_PATH,
+#     # JINJA_VARIABLE_TRANSLATE,
+#     # JINJA_VARIABLE_USER_ID,
+# )
 from .share import get_base
 
-TranslationDict = Dict[str, Union[str, Dict[str, str]]]
+TEMPLATE_GLOBALS = {}
+
+# TranslationDict = Dict[str, Union[str, Dict[str, str]]]
 
 LoadedYAML = Optional[Union[Any, OrderedDictType, List[Union[Any, List, Dict]], Dict]]
 
@@ -36,12 +39,12 @@ class CustomLoader(hass_loader.SafeLineLoader):
     def __init__(
         self,
         stream: StringIO,
-        user_id: Optional[str] = None,
-        translations: Optional[TranslationDict] = None,
+        # user_id: Optional[str] = None,
+        # translations: Optional[TranslationDict] = None,
     ):
         super().__init__(stream)
-        self._user_id = user_id
-        self._translations = translations
+        # self._user_id = user_id
+        # self._translations = translations
 
 
 async def setup_yaml_parser() -> None:
@@ -50,82 +53,94 @@ async def setup_yaml_parser() -> None:
     base = get_base()
     hass = base.hass
 
-    def load_translations(
-        language: Optional[str] = None,
-    ) -> TranslationDict:
-        """Load translation YAML files."""
+    # def load_translations(
+    #     language: Optional[str] = None,
+    # ) -> TranslationDict:
+    #     """Load translation YAML files."""
 
-        # Always load the default language
-        translations: TranslationDict = parse_yaml(
-            os.path.abspath(
-                os.path.join(
-                    os.path.dirname(__file__),
-                    os.pardir,
-                    TRANSLATIONS_PATH + DATA_DEFAULT_LANGUAGE + ".yaml",
-                )
-            ),
-            skip_translations=True,
-        )
+    #     # Always load the default language
+    #     translations: TranslationDict = parse_yaml(
+    #         os.path.abspath(
+    #             os.path.join(
+    #                 os.path.dirname(__file__),
+    #                 os.pardir,
+    #                 TRANSLATIONS_PATH + DATA_DEFAULT_LANGUAGE + ".yaml",
+    #             )
+    #         ),
+    #         skip_translations=True,
+    #     )
 
-        # Update with the selected language which allows for incomplete translations.
-        if language is not None and language != DATA_DEFAULT_LANGUAGE:
-            try:
-                translations.update(
-                    parse_yaml(
-                        os.path.abspath(
-                            os.path.join(
-                                os.path.dirname(__file__),
-                                os.pardir,
-                                TRANSLATIONS_PATH + language + ".yaml",
-                            )
-                        ),
-                        skip_translations=True,
-                    )
-                )
-            except:
-                base.log.warning(f"Translation doesn't exist for language '{language}'")
+    #     # Update with the selected language which allows for incomplete translations.
+    #     if language is not None and language != DATA_DEFAULT_LANGUAGE:
+    #         try:
+    #             translations.update(
+    #                 parse_yaml(
+    #                     os.path.abspath(
+    #                         os.path.join(
+    #                             os.path.dirname(__file__),
+    #                             os.pardir,
+    #                             TRANSLATIONS_PATH + language + ".yaml",
+    #                         )
+    #                     ),
+    #                     skip_translations=True,
+    #                 )
+    #             )
+    #         except:
+    #             base.log.warning(f"Translation doesn't exist for language '{language}'")
 
-        return translations
+    #     return translations
 
     def load_yaml(
         fname: str,
         args: Dict[str, Any] = {},
-        user_id: Optional[str] = None,
-        language: Optional[str] = None,
-        translations: Optional[TranslationDict] = None,
+        # user_id: Optional[str] = None,
+        # language: Optional[str] = None,
+        # translations: Optional[TranslationDict] = None,
     ) -> LoadedYAML:
         """Load a YAML file."""
 
-        return parse_yaml(fname, args, user_id, language, translations)
+        # return parse_yaml(fname, args, user_id, language, translations)
+        return parse_yaml(fname, args)
 
     def parse_yaml(
         fname: str,
         args: Dict[str, Any] = {},
-        user_id: Optional[str] = None,
-        language: Optional[str] = None,
-        translations: Optional[TranslationDict] = None,
-        skip_translations: bool = False,
+        # user_id: Optional[str] = None,
+        # language: Optional[str] = None,
+        # translations: Optional[TranslationDict] = None,
+        # skip_translations: bool = False,
     ) -> LoadedYAML:
         """Parse a YAML file."""
 
         template: str = ""
 
         try:
-            jinja: TemplateEnvironment = hass.data.get(_ENVIRONMENT)
+            parse = False
+            with open(fname, encoding="utf-8") as f:
+                if f.readline().lower().startswith(YAML_TAG):
+                    parse = True
 
-            if not skip_translations and translations is None:
-                translations = load_translations(language)
+            if parse:
+                jinja: TemplateEnvironment = hass.data.get(_ENVIRONMENT)
 
-            template = jinja.get_template(fname).render(
-                {
-                    **args,
-                    JINJA_VARIABLE_TRANSLATE: translations,
-                    JINJA_VARIABLE_USER_ID: user_id,
-                }
-            )
-            stream = io.StringIO(template)
-            stream.name = fname
-            return load(stream, None, user_id, translations) or OrderedDict()
+                # if not skip_translations and translations is None:
+                #     translations = load_translations(language)
+
+                template = jinja.get_template(fname).render(
+                    {
+                        **args,
+                        **TEMPLATE_GLOBALS,
+                        # JINJA_VARIABLE_TRANSLATE: translations,
+                        # JINJA_VARIABLE_USER_ID: user_id,
+                    }
+                )
+                stream = io.StringIO(template)
+                stream.name = fname
+                # return load(stream, None, user_id, translations) or OrderedDict()
+                return load(stream) or OrderedDict()
+            else:
+                return load(open(fname, encoding="utf-8")) or OrderedDict()
+
         except hass_loader.yaml.YAMLError as exc:
             base.log.error(f"{str(exc)}: {template}")
             raise HomeAssistantError(exc) from exc
@@ -219,8 +234,8 @@ async def setup_yaml_parser() -> None:
     def load(
         stream: StringIO,
         Loader: CustomLoader,
-        user_id: Optional[str] = None,
-        translations: Optional[TranslationDict] = None,
+        # user_id: Optional[str] = None,
+        # translations: Optional[TranslationDict] = None,
     ) -> LoadedYAML:
         """Load a YAML file."""
 
@@ -230,7 +245,8 @@ async def setup_yaml_parser() -> None:
 
         # loader: CustomLoader = None
         # if isinstance(Loader, CustomLoader):
-        loader = Loader(stream, user_id, translations)
+        # loader = Loader(stream, user_id, translations)
+        loader = Loader(stream)
         # else:
         # loader = Loader(stream)
 

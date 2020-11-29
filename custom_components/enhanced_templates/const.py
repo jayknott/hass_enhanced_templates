@@ -111,3 +111,5 @@ SERVICE_IDS = {
 }
 
 TRANSLATIONS_PATH = "translations/"
+
+YAML_TAG = f"# {DOMAIN}"

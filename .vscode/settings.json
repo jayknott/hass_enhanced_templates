@@ -4,8 +4,10 @@
     "python.pythonPath": "~/.pyenv/versions/3.8.6/bin/python",
     "cSpell.words": [
         "codeowners",
+        "fname",
         "hass",
-        "jayknott"
+        "jayknott",
+        "uncache"
     ],
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "ms-python.python"
