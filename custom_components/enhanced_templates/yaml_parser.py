@@ -233,7 +233,7 @@ async def setup_yaml_parser() -> None:
 
     def load(
         stream: StringIO,
-        Loader: CustomLoader,
+        Loader: CustomLoader = None,
         # user_id: Optional[str] = None,
         # translations: Optional[TranslationDict] = None,
     ) -> LoadedYAML:
