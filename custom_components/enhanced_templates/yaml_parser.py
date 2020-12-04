@@ -104,11 +104,7 @@ def _include_yaml(
     node_values = process_node(loader, node)
 
     try:
-        return hass_loader._add_reference(
-            load_yaml(*node_values, loader._user_id, None, loader._translations),
-            loader,
-            node,
-        )
+        return hass_loader._add_reference(load_yaml(*node_values), loader, node)
     except FileNotFoundError as exc:
         get_log().error("Unable to include file %s: %s", node_values[0], exc)
         raise HomeAssistantError(exc)
@@ -118,10 +114,11 @@ def _include_dir_list_yaml(
     loader: hass_loader.SafeLineLoader, node: hass_loader.yaml.Node
 ) -> LoadedYAML:
     """Handle !include_dir_list tag"""
+
     node_values = process_node(loader, node)
     loc: str = os.path.join(os.path.dirname(loader.name), node_values[0])
     return [
-        load_yaml(f, node_values[1], loader._user_id, None, loader._translations)
+        load_yaml(f, node_values[1])
         for f in hass_loader._find_files(loc, "*.yaml")
         if os.path.basename(f) != hass_loader.SECRET_YAML
     ]
@@ -138,9 +135,7 @@ def _include_dir_merge_list_yaml(
     for fname in hass_loader._find_files(loc, "*.yaml"):
         if os.path.basename(fname) == hass_loader.SECRET_YAML:
             continue
-        loaded_yaml = load_yaml(
-            fname, node_values[1], loader._user_id, None, loader._translations
-        )
+        loaded_yaml = load_yaml(fname, node_values[1])
         if isinstance(loaded_yaml, list):
             merged_list.extend(loaded_yaml)
     return hass_loader._add_reference(merged_list, loader, node)
@@ -158,9 +153,7 @@ def _include_dir_named_yaml(
         filename = os.path.splitext(os.path.basename(fname))[0]
         if os.path.basename(fname) == hass_loader.SECRET_YAML:
             continue
-        mapping[filename] = load_yaml(
-            fname, node_values[1], loader._user_id, None, loader._translations
-        )
+        mapping[filename] = load_yaml(fname, node_values[1])
     return hass_loader._add_reference(mapping, loader, node)
 
 
