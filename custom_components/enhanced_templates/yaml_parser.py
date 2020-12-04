@@ -67,7 +67,7 @@ def parse_yaml(fname: str, args: Dict[str, Any] = {}) -> LoadedYAML:
 
         if parse:
             jinja: TemplateEnvironment = get_hass().data.get(_ENVIRONMENT)
-            template = jinja.get_template(fname).render({**args, **TEMPLATE_GLOBALS})
+            template = jinja.get_template(fname).render({**args})
             stream = io.StringIO(template)
             stream.name = fname
 
