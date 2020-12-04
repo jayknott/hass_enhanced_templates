@@ -35,17 +35,17 @@ async def setup_yaml_parser() -> None:
 
     hass_loader.load_yaml = load_yaml
     dashboard.load_yaml = load_yaml
-    hass_loader.SafeLineLoader.add_constructor("!include", _include_yaml)
-    hass_loader.SafeLineLoader.add_constructor(
+    hass_loader.yaml.SafeLoader.add_constructor("!include", _include_yaml)
+    hass_loader.yaml.SafeLoader.add_constructor(
         "!include_dir_list", _include_dir_list_yaml
     )
-    hass_loader.SafeLineLoader.add_constructor(
+    hass_loader.yaml.SafeLoader.add_constructor(
         "!include_dir_merge_list", _include_dir_merge_list_yaml
     )
-    hass_loader.SafeLineLoader.add_constructor(
+    hass_loader.yaml.SafeLoader.add_constructor(
         "!include_dir_named", _include_dir_named_yaml
     )
-    hass_loader.SafeLineLoader.add_constructor("!file", _uncache_file)
+    hass_loader.yaml.SafeLoader.add_constructor("!file", _uncache_file)
 
 
 def load_yaml(fname: str, args: Dict[str, Any] = {}) -> LoadedYAML:
@@ -81,7 +81,7 @@ def parse_yaml(fname: str, args: Dict[str, Any] = {}) -> LoadedYAML:
 
 
 def process_node(
-    loader: hass_loader.SafeLineLoader, node: hass_loader.yaml.Node
+    loader: hass_loader.yaml.SafeLoader, node: hass_loader.yaml.Node
 ) -> List[Union[str, Dict[str, Any]]]:
     """Process include nodes to see if there are arguments."""
 
@@ -97,7 +97,7 @@ def process_node(
 
 
 def _include_yaml(
-    loader: hass_loader.SafeLineLoader, node: hass_loader.yaml.Node
+    loader: hass_loader.yaml.SafeLoader, node: hass_loader.yaml.Node
 ) -> LoadedYAML:
     """Handle !include tag"""
 
@@ -111,7 +111,7 @@ def _include_yaml(
 
 
 def _include_dir_list_yaml(
-    loader: hass_loader.SafeLineLoader, node: hass_loader.yaml.Node
+    loader: hass_loader.yaml.SafeLoader, node: hass_loader.yaml.Node
 ) -> LoadedYAML:
     """Handle !include_dir_list tag"""
 
@@ -125,7 +125,7 @@ def _include_dir_list_yaml(
 
 
 def _include_dir_merge_list_yaml(
-    loader: hass_loader.SafeLineLoader, node: hass_loader.yaml.Node
+    loader: hass_loader.yaml.SafeLoader, node: hass_loader.yaml.Node
 ) -> LoadedYAML:
     """Handle !include_dir_merge_list tag"""
 
@@ -142,7 +142,7 @@ def _include_dir_merge_list_yaml(
 
 
 def _include_dir_named_yaml(
-    loader: hass_loader.SafeLineLoader, node: hass_loader.yaml.Node
+    loader: hass_loader.yaml.SafeLoader, node: hass_loader.yaml.Node
 ) -> LoadedYAML:
     """Handle !include_dir_named tag"""
 
@@ -158,7 +158,7 @@ def _include_dir_named_yaml(
 
 
 def _uncache_file(
-    _loader: hass_loader.SafeLineLoader, node: hass_loader.yaml.Node
+    _loader: hass_loader.yaml.SafeLoader, node: hass_loader.yaml.Node
 ) -> str:
     """Handle !file tag"""
 
