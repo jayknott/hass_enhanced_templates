@@ -71,9 +71,17 @@ def parse_yaml(fname: str, args: Dict[str, Any] = {}) -> LoadedYAML:
             stream = io.StringIO(template)
             stream.name = fname
 
-            return hass_loader.yaml.load(stream) or OrderedDict()
+            return (
+                hass_loader.yaml.load(stream, Loader=hass_loader.SafeLineLoader)
+                or OrderedDict()
+            )
         else:
-            return hass_loader.yaml.load(open(fname, encoding="utf-8")) or OrderedDict()
+            return (
+                hass_loader.yaml.load(
+                    open(fname, encoding="utf-8"), Loader=hass_loader.SafeLineLoader
+                )
+                or OrderedDict()
+            )
 
     except hass_loader.yaml.YAMLError as exc:
         get_log().error(f"{str(exc)}: {template}")
