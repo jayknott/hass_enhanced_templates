@@ -1,5 +1,4 @@
 """Setup and manage area or entity registries."""
-from json import JSONEncoder
 import re
 from typing import Any, Callable, Dict, Iterable, List, Optional, Union
 import voluptuous as vol
@@ -53,7 +52,7 @@ async def update_registry() -> None:
     get_base().area_registry = _areas_registry_data()
 
 
-class EnhancedArea(dict):
+class EnhancedArea:
     """Model for an Area."""
 
     def __init__(
@@ -136,8 +135,7 @@ class EnhancedArea(dict):
             f"visible={self.visible}>"
         )
 
-    @property
-    def __dict__(self):
+    def as_dict(self):
         return {
             "id": self.id,
             "name": self.name,
@@ -362,8 +360,7 @@ class EnhancedEntity:
             f"state={self.state}>"
         )
 
-    @property
-    def __dict__(self):
+    def as_dict(self):
         return {
             "entity_id": self.entity_id,
             "area_id": self.area_id,
