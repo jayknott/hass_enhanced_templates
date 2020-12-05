@@ -1,8 +1,5 @@
 """Setup and manage area or entity registries."""
-from custom_components.enhanced_templates.model import (
-    AreaSettingsEntry,
-    EntitySettingsEntry,
-)
+from json import JSONEncoder
 import re
 from typing import Any, Callable, Dict, Iterable, List, Optional, Union
 import voluptuous as vol
@@ -24,6 +21,10 @@ from .const import (
     DEFAULT_AREA_ICON,
     DEFAULT_SORT_ORDER,
     PLATFORM_BINARY_SENSOR,
+)
+from .model import (
+    AreaSettingsEntry,
+    EntitySettingsEntry,
 )
 from .share import get_base, get_hass
 
@@ -52,7 +53,7 @@ async def update_registry() -> None:
     get_base().area_registry = _areas_registry_data()
 
 
-class EnhancedArea:
+class EnhancedArea(dict):
     """Model for an Area."""
 
     def __init__(
@@ -135,6 +136,7 @@ class EnhancedArea:
             f"visible={self.visible}>"
         )
 
+    @property
     def __dict__(self):
         return {
             "id": self.id,
@@ -360,6 +362,7 @@ class EnhancedEntity:
             f"state={self.state}>"
         )
 
+    @property
     def __dict__(self):
         return {
             "entity_id": self.entity_id,

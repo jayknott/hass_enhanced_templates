@@ -97,7 +97,7 @@ async def websocket_get_area_settings(hass: HomeAssistant, connection: str, msg:
     if area.area_entry is None:
         connection.send_error(msg["id"], "area_not_found", "Area not found")
 
-    connection.send_result(msg["id"], area.__dict__())
+    connection.send_result(msg["id"], area.__dict__)
 
 
 @websocket_api.websocket_command(
@@ -116,7 +116,7 @@ async def websocket_get_entity_settings(
     if entity.entity_state is None:
         connection.send_error(msg["id"], "entity_not_found", "Entity not found")
 
-    connection.send_result(msg["id"], entity.__dict__())
+    connection.send_result(msg["id"], entity.__dict__)
 
 
 async def setup_settings() -> None:
