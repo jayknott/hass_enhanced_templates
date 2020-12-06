@@ -23,22 +23,22 @@ from .share import get_hass, get_log
 LoadedYAML = Optional[Union[Any, OrderedDictType, List[Union[Any, List, Dict]], Dict]]
 
 
+class EnhancedLoader(hass_loader.SafeLineLoader):
+    pass
+
+
 async def setup_yaml_parser() -> None:
     """Setup the YAML parser."""
 
     hass_loader.load_yaml = load_yaml
     dashboard.load_yaml = load_yaml
-    hass_loader.SafeLineLoader.add_constructor("!include", _include_yaml)
-    hass_loader.SafeLineLoader.add_constructor(
-        "!include_dir_list", _include_dir_list_yaml
-    )
-    hass_loader.SafeLineLoader.add_constructor(
+    EnhancedLoader.add_constructor("!include", _include_yaml)
+    EnhancedLoader.add_constructor("!include_dir_list", _include_dir_list_yaml)
+    EnhancedLoader.add_constructor(
         "!include_dir_merge_list", _include_dir_merge_list_yaml
     )
-    hass_loader.SafeLineLoader.add_constructor(
-        "!include_dir_named", _include_dir_named_yaml
-    )
-    hass_loader.SafeLineLoader.add_constructor("!file", _uncache_file)
+    EnhancedLoader.add_constructor("!include_dir_named", _include_dir_named_yaml)
+    EnhancedLoader.add_constructor("!file", _uncache_file)
 
 
 def load_yaml(fname: str, args: Dict[str, Any] = {}) -> LoadedYAML:
@@ -64,14 +64,11 @@ def parse_yaml(fname: str, args: Dict[str, Any] = {}) -> LoadedYAML:
             stream = io.StringIO(template)
             stream.name = fname
 
-            return (
-                hass_loader.yaml.load(stream, Loader=hass_loader.SafeLineLoader)
-                or OrderedDict()
-            )
+            return hass_loader.yaml.load(stream, Loader=EnhancedLoader) or OrderedDict()
         else:
             return (
                 hass_loader.yaml.load(
-                    open(fname, encoding="utf-8"), Loader=hass_loader.SafeLineLoader
+                    open(fname, encoding="utf-8"), Loader=EnhancedLoader
                 )
                 or OrderedDict()
             )
@@ -82,7 +79,7 @@ def parse_yaml(fname: str, args: Dict[str, Any] = {}) -> LoadedYAML:
 
 
 def process_node(
-    loader: hass_loader.SafeLineLoader, node: hass_loader.yaml.Node
+    loader: EnhancedLoader, node: hass_loader.yaml.Node
 ) -> List[Union[str, Dict[str, Any]]]:
     """Process include nodes to see if there are arguments."""
 
@@ -97,9 +94,7 @@ def process_node(
     return [fname, args]
 
 
-def _include_yaml(
-    loader: hass_loader.SafeLineLoader, node: hass_loader.yaml.Node
-) -> LoadedYAML:
+def _include_yaml(loader: EnhancedLoader, node: hass_loader.yaml.Node) -> LoadedYAML:
     """Handle !include tag"""
 
     node_values = process_node(loader, node)
@@ -112,7 +107,7 @@ def _include_yaml(
 
 
 def _include_dir_list_yaml(
-    loader: hass_loader.SafeLineLoader, node: hass_loader.yaml.Node
+    loader: EnhancedLoader, node: hass_loader.yaml.Node
 ) -> LoadedYAML:
     """Handle !include_dir_list tag"""
 
@@ -126,7 +121,7 @@ def _include_dir_list_yaml(
 
 
 def _include_dir_merge_list_yaml(
-    loader: hass_loader.SafeLineLoader, node: hass_loader.yaml.Node
+    loader: EnhancedLoader, node: hass_loader.yaml.Node
 ) -> LoadedYAML:
     """Handle !include_dir_merge_list tag"""
 
@@ -143,7 +138,7 @@ def _include_dir_merge_list_yaml(
 
 
 def _include_dir_named_yaml(
-    loader: hass_loader.SafeLineLoader, node: hass_loader.yaml.Node
+    loader: EnhancedLoader, node: hass_loader.yaml.Node
 ) -> LoadedYAML:
     """Handle !include_dir_named tag"""
 
@@ -158,9 +153,7 @@ def _include_dir_named_yaml(
     return hass_loader._add_reference(mapping, loader, node)
 
 
-def _uncache_file(
-    _loader: hass_loader.SafeLineLoader, node: hass_loader.yaml.Node
-) -> str:
+def _uncache_file(_loader: EnhancedLoader, node: hass_loader.yaml.Node) -> str:
     """Handle !file tag"""
 
     path = node.value
