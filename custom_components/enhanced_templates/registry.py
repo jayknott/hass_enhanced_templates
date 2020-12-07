@@ -11,6 +11,7 @@ from homeassistant.const import (
 )
 from homeassistant.core import HomeAssistant, State
 from homeassistant.helpers.area_registry import AreaEntry, AreaRegistry
+from homeassistant.helpers.device_registry import DeviceRegistry, DeviceEntry
 from homeassistant.helpers.entity_registry import EntityRegistry, RegistryEntry
 
 from .const import (
@@ -155,11 +156,13 @@ class EnhancedEntity:
         entity_settings: EntitySettingsEntry = None,
         entity_state: State = None,
         entity_entry: RegistryEntry = None,
+        device_entry: DeviceEntry = None,
     ):
         self.entity_id = entity_id
         self.entity_settings = self._get_entity_settings(entity_settings)
         self.entity_state = self._get_entity_state(entity_state)
         self.entity_entry = self._get_entity_entry(entity_entry)
+        self.device_entry = self._get_device_entry(device_entry)
 
     @property
     def area_id(self) -> Optional[str]:
@@ -167,8 +170,8 @@ class EnhancedEntity:
 
         id: Optional[str] = self.entity_settings.get(ATTR_AREA_ID)
 
-        if id is None and self.entity_entry is not None:
-            id = self.entity_entry.area_id
+        if id is None and self.original_area_id is not None:
+            id = self.original_area_id
 
         if id is None:
             id = self._match_area_with_entity_id()
@@ -190,7 +193,10 @@ class EnhancedEntity:
     def original_area_id(self) -> Optional[str]:
         """Area ID from the entry."""
 
-        return self.entity_entry.area_id if self.entity_entry is not None else None
+        if self.device_entry is not None and self.device_entry.area_id is not None:
+            return self.device_entry.area_id
+
+        return None
 
     @property
     def name(self) -> str:
@@ -270,6 +276,18 @@ class EnhancedEntity:
             state = get_hass().states.get(self.entity_id)
 
         return state
+
+    def _get_device_entry(
+        self, device_entry: Optional[DeviceEntry] = None
+    ) -> Optional[DeviceEntry]:
+        """If the entry is None, find the device if it exists."""
+
+        entry = device_entry
+        if entry is None and self.entity_entry is not None:
+            registry: DeviceRegistry = get_hass().data["device_registry"]
+            entry = registry.async_get(self.entity_entry.device_id)
+
+        return entry
 
     def _get_entity_entry(
         self, entity_entry: Optional[RegistryEntry] = None
