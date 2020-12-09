@@ -156,7 +156,6 @@ async def update_area_settings() -> None:
 async def update_entity_settings() -> None:
     """Update the entity domain data entries."""
 
-    # get_base().entities = await hass_entities()
     get_base().entities = await _get_data(CONF_ENTITIES)
 
 
@@ -287,28 +286,6 @@ async def _update_entity(call: ServiceCall) -> bool:
     return False
 
 
-async def _get_area_id_by_name(area_name: Optional[str]) -> Optional[str]:
-    """Get an area's ID by its name."""
-
-    base = get_base()
-    area: Optional[EnhancedArea] = None
-
-    if area_name is not None and area_name != "":
-        area = next(
-            (area_obj for area_obj in base.area_registry if area_obj.name == area_name),
-            None,
-        )
-    else:
-        return None
-
-    if area is None:
-        raise vol.error.SchemaError(
-            f"Cannot update area because an area with name '{area_name}' doesn't exist"
-        )
-
-    return area.id
-
-
 async def _store_data(store: Store, data: dict, object_key: str) -> bool:
     """Write data to a store."""
 
@@ -339,11 +316,6 @@ async def _update_key_value(
     new_value: Any = call.data.get(field_key)
     if new_value == "":
         new_value = None
-
-    # if field_key == CONF_AREA_NAME:
-    #     field_key = ATTR_AREA_ID
-    #     area_id = await _get_area_id_by_name(new_value)
-    #     new_value = area_id
 
     # Convert integers from strings
     if field_key in [CONF_SORT_ORDER] and new_value is not None:

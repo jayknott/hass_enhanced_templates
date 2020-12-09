@@ -41,14 +41,20 @@ PLATFORM_MAP = {}
 async def setup_registry() -> None:
     """Setup registry."""
 
-    await update_registry()
+    update_registry()
 
     register = get_hass().components.websocket_api.async_register_command
     register(websocket_get_entity_types)
 
 
-async def update_registry() -> None:
+def update_registry() -> None:
     """Update registry."""
+
+    update_area_registry()
+
+
+def update_area_registry() -> None:
+    """Update area registry."""
 
     get_base().area_registry = _areas_registry_data()
 
@@ -404,7 +410,7 @@ async def websocket_get_entity_types(hass: HomeAssistant, connection: str, msg: 
 
 
 def _areas_registry_data() -> Iterable[AreaEntry]:
-    area_registry: AreaRegistry = get_base().hass.data["area_registry"]
+    area_registry: AreaRegistry = get_hass().data["area_registry"]
     return sorted(area_registry.async_list_areas(), key=lambda entry: entry.name)
 
 
@@ -434,7 +440,7 @@ def get_entities(
         return EnhancedEntity(entity_id)
 
     entities = []
-    for entity_id in get_base().hass.states.async_entity_ids():
+    for entity_id in get_hass().states.async_entity_ids():
         enhanced_entity = EnhancedEntity(entity_id)
         if (include_hidden or enhanced_entity.visible) and (
             include_disabled or not enhanced_entity.disabled

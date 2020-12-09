@@ -27,12 +27,6 @@ async def setup_template() -> None:
     hass = get_hass()
 
     jinja = hass.data[_ENVIRONMENT] = EnhancedTemplateEnvironment(hass)
-    # jinja.block_start_string = "<%"
-    # jinja.block_end_string = "%>"
-    # jinja.variable_start_string = "<<"
-    # jinja.variable_end_string = ">>"
-    # jinja.comment_start_string = "<#"
-    # jinja.comment_end_string = "#>"
 
     # Add a loader so Jinja can use files.
     jinja.loader = jinja2.FileSystemLoader("/")
