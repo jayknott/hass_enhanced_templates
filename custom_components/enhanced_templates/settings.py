@@ -233,7 +233,7 @@ async def _update_area(call: ServiceCall) -> bool:
         data = {}
     data[CONF_UPDATED] = False
 
-    area = EnhancedArea(call.date.get(ATTR_AREA_ID))
+    area = EnhancedArea(call.data.get(ATTR_AREA_ID))
 
     await _update_key_value(data, call, area.id, ATTR_NAME, area.original_name)
     await _update_key_value(data, call, area.id, CONF_ICON, DEFAULT_AREA_ICON)
