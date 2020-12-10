@@ -321,7 +321,9 @@ class EnhancedEntity:
         for area in areas:
             name = area.name.lower().replace(" ", "_")
             quote = "'"
-            regex = f"(all_)?({name.replace(quote, '')}|{name.replace(quote, '_')})_"
+            regex = (
+                f"(all_)?({name.replace(quote, '')}|{name.replace(quote, '_')})(_|$)"
+            )
             if re.match(regex, self.entity_id.split(".")[-1]):
                 return area.id
 
