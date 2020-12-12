@@ -42,7 +42,10 @@ async def setup_template() -> None:
 def service_exists(service: str) -> bool:
     """Tests if a service exists."""
 
-    return get_hass().services.has_service(*service.split("."))
+    try:
+        return get_hass().services.has_service(*service.split("."))
+    except:
+        return False
 
 
 class EnhancedTemplateEnvironment(TemplateEnvironment):
