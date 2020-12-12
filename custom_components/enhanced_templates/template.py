@@ -1,10 +1,4 @@
 """Extend the template options for HA."""
-
-# from homeassistant.const import ATTR_ENTITY_ID
-# from homeassistant.helpers.event import TrackTemplate
-# from homeassistant.helpers.typing import TemplateVarsType
-# from custom_components.enhanced_templates.const import EVENT_AREAS_CHANGED
-# from homeassistant.core import Event
 import jinja2
 from typing import Optional
 
@@ -36,10 +30,18 @@ async def setup_template() -> None:
         jinja.tests["regex_match"] = regex_match
     if jinja.tests.get("regex_search") is None:
         jinja.tests["regex_search"] = regex_search
+    if jinja.tests.get("service_exists") is None:
+        jinja.tests["service_exists"] = service_exists
 
     # Add custom globals
     jinja.globals["areas"] = AreasTemplate()
     jinja.globals["entities"] = EntitiesTemplate()
+
+
+def service_exists(domain: str, service: str):
+    """Tests if a service exists."""
+
+    return get_hass().services.has_service(domain, service)
 
 
 class EnhancedTemplateEnvironment(TemplateEnvironment):
