@@ -39,7 +39,7 @@ async def setup_template() -> None:
     jinja.globals["service_exists"] = service_exists
 
 
-def service_exists(service: str):
+def service_exists(service: str) -> bool:
     """Tests if a service exists."""
 
     return get_hass().services.has_service(*service.split("."))
