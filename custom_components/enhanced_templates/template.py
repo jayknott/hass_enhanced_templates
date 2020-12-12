@@ -38,10 +38,10 @@ async def setup_template() -> None:
     jinja.globals["entities"] = EntitiesTemplate()
 
 
-def service_exists(domain: str, service: str):
+def service_exists(service: str):
     """Tests if a service exists."""
 
-    return get_hass().services.has_service(domain, service)
+    return get_hass().services.has_service(*service.split("."))
 
 
 class EnhancedTemplateEnvironment(TemplateEnvironment):
