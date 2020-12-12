@@ -36,6 +36,7 @@ async def setup_template() -> None:
     # Add custom globals
     jinja.globals["areas"] = AreasTemplate()
     jinja.globals["entities"] = EntitiesTemplate()
+    jinja.globals["service_exists"] = service_exists
 
 
 def service_exists(service: str):
