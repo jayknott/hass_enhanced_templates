@@ -39,7 +39,7 @@ async def setup_template() -> None:
     jinja.globals["service_exists"] = service_exists
 
 
-def service_exists(service: str) -> bool:
+def service_exists(service: str = None) -> bool:
     """Tests if a service exists."""
 
     if service in [None, ""] or "." not in service:
