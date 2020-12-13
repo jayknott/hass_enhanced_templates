@@ -42,6 +42,9 @@ async def setup_template() -> None:
 def service_exists(service: str) -> bool:
     """Tests if a service exists."""
 
+    if service in [None, ""] or "." not in service:
+        return False
+
     try:
         return get_hass().services.has_service(*service.split("."))
     except:
