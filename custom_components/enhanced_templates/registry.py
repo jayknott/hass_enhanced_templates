@@ -199,6 +199,9 @@ class EnhancedEntity:
     def original_area_id(self) -> Optional[str]:
         """Area ID from the entry."""
 
+        if self.entity_entry is not None and self.entity_entry.area_id is not None:
+            return self.entity_entry.area_id
+
         if self.device_entry is not None and self.device_entry.area_id is not None:
             return self.device_entry.area_id
 
