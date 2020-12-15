@@ -1,6 +1,6 @@
 """Extend the template options for HA."""
 import jinja2
-from typing import Optional
+from typing import Any, Optional
 
 from homeassistant.helpers.template import (
     # RenderInfo,
@@ -30,8 +30,18 @@ async def setup_template() -> None:
         jinja.tests["regex_match"] = regex_match
     if jinja.tests.get("regex_search") is None:
         jinja.tests["regex_search"] = regex_search
+
+    # Add custom tests and filters
     if jinja.tests.get("service_exists") is None:
         jinja.tests["service_exists"] = service_exists
+    if jinja.tests.get("truthy") is None:
+        jinja.tests["truthy"] = truthy
+    if jinja.filters.get("truthy") is None:
+        jinja.filters["truthy"] = truthy
+    if jinja.tests.get("falsy") is None:
+        jinja.tests["falsy"] = falsy
+    if jinja.filters.get("truthy") is None:
+        jinja.filters["truthy"] = falsy
 
     # Add custom globals
     jinja.globals["areas"] = AreasTemplate()
@@ -49,6 +59,39 @@ def service_exists(service: str = None) -> bool:
         return get_hass().services.has_service(*service.split("."))
     except:
         return False
+
+
+def truthy(obj: Any = None):
+    """Check if an object or string represents true."""
+
+    if obj is None or obj is False or obj == 0:
+        return False
+
+    if obj is True:
+        return True
+
+    if isinstance(obj, str):
+        return obj.lower() in ["true", "yes", "t", "y", "1"]
+
+    if isinstance(obj, (int, float)):
+        return obj != 0
+
+    return False
+
+
+def falsy(obj: Any = None):
+    """Check if an object or string represents false."""
+
+    if obj is None or obj is False or obj == 0:
+        return True
+
+    if obj is True:
+        return False
+
+    if isinstance(obj, str):
+        return obj.lower() in ["false", "no", "f", "n", "0"]
+
+    return False
 
 
 class EnhancedTemplateEnvironment(TemplateEnvironment):
