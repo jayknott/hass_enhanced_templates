@@ -8,6 +8,7 @@ from homeassistant.const import (
     ATTR_NAME,
     CONF_ENTITY_ID,
     CONF_ICON,
+    CONF_ID,
 )
 from homeassistant.core import HomeAssistant, ServiceCall
 import homeassistant.helpers.config_validation as cv
@@ -22,6 +23,8 @@ from .const import (
     CONF_ENTITY_TYPE,
     CONF_ORIGINAL_AREA_ID,
     CONF_ORIGINAL_ENTITY_TYPE,
+    CONF_PERSON,
+    CONF_PERSONS,
     CONF_SORT_ORDER,
     CONF_UPDATE,
     CONF_VISIBLE,
@@ -32,14 +35,16 @@ from .const import (
     DOMAIN,
     EVENT_AREA_SETTINGS_CHANGED,
     EVENT_ENTITY_SETTINGS_CHANGED,
+    EVENT_PERSON_SETTINGS_CHANGED,
     EVENT_SETTINGS_CHANGED,
     PLATFORM_BINARY_SENSOR,
 )
 from .model import (
     AreaSettingsRegistry,
     EntitySettingsRegistry,
+    PersonSettingsRegistry,
 )
-from .registry import EnhancedArea, EnhancedEntity
+from .registry import EnhancedArea, EnhancedEntity, EnhancedPerson
 from .share import get_base, get_hass
 
 PLATFORM = PLATFORM_BINARY_SENSOR
@@ -82,6 +87,22 @@ SCHEMA_UPDATE_ENTITY_SERVICE = vol.Schema(
     }
 )
 
+SCHEMA_UPDATE_PERSON_SERVICE = vol.Schema(
+    {
+        vol.Required(CONF_ID): vol.All(str, vol.Length(min=1)),
+        vol.Optional(ATTR_NAME): vol.Any(None, "", vol.All(str, vol.Length(min=1))),
+        vol.Optional(CONF_SORT_ORDER): vol.Any(
+            None,
+            "",
+            vol.All(
+                vol.Coerce(float),
+                vol.Range(min=DEFAULT_SORT_ORDER_MIN, max=DEFAULT_SORT_ORDER_MAX),
+            ),
+        ),
+        vol.Optional(CONF_VISIBLE): vol.Boolean(),
+    }
+)
+
 
 @websocket_api.websocket_command(
     {
@@ -119,21 +140,42 @@ async def websocket_get_entity_settings(
     connection.send_result(msg["id"], entity.as_dict())
 
 
+@websocket_api.websocket_command(
+    {
+        vol.Required("type"): "enhanced_templates_person_settings",
+        vol.Required("person_id"): cv.string,
+    }
+)
+@websocket_api.async_response
+async def websocket_get_person_settings(
+    hass: HomeAssistant, connection: str, msg: dict
+):
+    """Get person settings for a person from a websocket connection."""
+
+    person = EnhancedPerson(msg["person_id"])
+    if person.person_entry is None:
+        connection.send_error(msg["id"], "person_not_found", "Person not found")
+
+    connection.send_result(msg["id"], person.as_dict())
+
+
 async def setup_settings() -> None:
-    """Initialize the area and entity domain data entries."""
+    """Initialize the settings and websocket api."""
 
     await update_settings()
 
     register = get_hass().components.websocket_api.async_register_command
     register(websocket_get_area_settings)
     register(websocket_get_entity_settings)
+    register(websocket_get_person_settings)
 
 
 async def update_settings() -> None:
-    """Update the area and entity domain data entries."""
+    """Update the domain settings entries."""
 
     await update_area_settings()
     await update_entity_settings()
+    await update_person_settings()
 
 
 async def _get_data(store_name: str) -> dict:
@@ -159,6 +201,12 @@ async def update_entity_settings() -> None:
     get_base().entities = await _get_data(CONF_ENTITIES)
 
 
+async def update_person_settings() -> None:
+    """Update the person domain data entries."""
+
+    get_base().persons = await _get_data(CONF_PERSONS)
+
+
 async def save_setting(setting_type: str, call: ServiceCall) -> None:
     """Wrapper for all save setting services."""
 
@@ -169,6 +217,9 @@ async def save_setting(setting_type: str, call: ServiceCall) -> None:
 
     if setting_type == CONF_ENTITY:
         updated = await _update_entity(call) or updated
+
+    if setting_type == CONF_PERSON:
+        updated = await _update_person(call) or updated
 
     if updated:
         get_base().hass.bus.fire(EVENT_SETTINGS_CHANGED)
@@ -280,6 +331,33 @@ async def _update_entity(call: ServiceCall) -> bool:
         hass.bus.fire(
             EVENT_ENTITY_SETTINGS_CHANGED,
             {CONF_ACTION: CONF_UPDATE, ATTR_AREA_ID: entity_id},
+        )
+        return True
+
+    return False
+
+
+async def _update_person(call: ServiceCall) -> bool:
+    """Update the settings for a person."""
+
+    hass = get_base().hass
+    store = Store(hass, 1, f"{DOMAIN}.{CONF_PERSONS}")
+    data: Optional[PersonSettingsRegistry] = await store.async_load()
+
+    if data is None:
+        data = {}
+    data[CONF_UPDATED] = False
+
+    person = EnhancedPerson(call.data.get(CONF_ID))
+
+    await _update_key_value(data, call, person.id, ATTR_NAME, person.original_name)
+    await _update_key_value(data, call, person.id, CONF_SORT_ORDER, DEFAULT_SORT_ORDER)
+    await _update_key_value(data, call, person.id, CONF_VISIBLE, True)
+
+    if await _store_data(store, data, person.id):
+        hass.bus.fire(
+            EVENT_PERSON_SETTINGS_CHANGED,
+            {CONF_ACTION: CONF_UPDATE, CONF_ID: person.id},
         )
         return True
 

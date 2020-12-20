@@ -1,17 +1,22 @@
 """Setup and manage area or entity registries."""
 import re
-from typing import Any, Callable, Dict, Iterable, List, Optional, Union
+from typing import Any, Callable, Dict, Iterable, List, Optional, Union, cast
 import voluptuous as vol
 
 from homeassistant.components import websocket_api
+from homeassistant.components.person import (
+    CONF_DEVICE_TRACKERS,
+    PersonStorageCollection,
+)
 from homeassistant.const import (
     ATTR_AREA_ID,
     CONF_ICON,
+    CONF_ID,
     CONF_NAME,
 )
 from homeassistant.core import HomeAssistant, State
 from homeassistant.helpers.area_registry import AreaEntry, AreaRegistry
-from homeassistant.helpers.device_registry import DeviceRegistry, DeviceEntry
+from homeassistant.helpers.device_registry import DeviceEntry, DeviceRegistry
 from homeassistant.helpers.entity_registry import EntityRegistry, RegistryEntry
 
 from .const import (
@@ -21,10 +26,14 @@ from .const import (
     DEFAULT_AREA_ICON,
     DEFAULT_SORT_ORDER,
     PLATFORM_BINARY_SENSOR,
+    PLATFORM_PERSON,
 )
 from .model import (
     AreaSettingsEntry,
     EntitySettingsEntry,
+    PersonEntry,
+    PersonRegistry,
+    PersonSettingsEntry,
 )
 from .share import get_base, get_hass
 
@@ -225,6 +234,12 @@ class EnhancedEntity:
         return self.entity_id.split(".")[0]
 
     @property
+    def device_id(self) -> str:
+        """Id of the entity."""
+
+        return self.entity_id.split(".")[-1]
+
+    @property
     def original_entity_type(self) -> str:
         """Original entity type inferred from domain."""
 
@@ -380,6 +395,7 @@ class EnhancedEntity:
             f"original_area_id={self.original_area_id}, "
             f"name={self.name}, "
             f"domain={self.domain}, "
+            f"device_id={self.device_id}, "
             f"entity_type={self.entity_type}, "
             f"original_entity_type={self.original_entity_type}, "
             f"sort_order={self.sort_order}, "
@@ -396,11 +412,135 @@ class EnhancedEntity:
             "original_area_id": self.original_area_id,
             "name": self.name,
             "domain": self.domain,
+            "device_id": self.device_id,
             "entity_type": self.entity_type,
             "original_entity_type": self.original_entity_type,
             "sort_order": self.sort_order,
             "visible": self.visible,
             "disabled": self.disabled,
+        }
+
+
+class EnhancedPerson:
+    """Model for a Person."""
+
+    def __init__(
+        self,
+        id: str,
+        person_settings: Optional[PersonSettingsEntry] = None,
+        person_state: State = None,
+        person_entry: Optional[PersonEntry] = None,
+    ) -> None:
+        self.id = id
+        self.person_settings = self._get_person_settings(person_settings)
+        self.person_state = self._get_person_state(person_state)
+        self.person_entry = self._get_person_entry(person_entry)
+
+    @property
+    def name(self) -> str:
+        """Name of the person from the HA person registry."""
+
+        return self.person_entry.get(CONF_NAME)
+
+    @property
+    def original_name(self) -> str:
+        """Name of the person from th HA area registry."""
+
+        return self.person_entry.name
+
+    @property
+    def sort_order(self) -> int:
+        """Sort order from settings or the default."""
+
+        return self.person_settings.get(CONF_SORT_ORDER, DEFAULT_SORT_ORDER)
+
+    @property
+    def state(self):
+        """Wrapper for entity_state."""
+
+        return self.person_state
+
+    @property
+    def visible(self) -> bool:
+        """Visible from settings or the default (True)."""
+
+        return self.person_settings.get(CONF_VISIBLE, True)
+
+    @property
+    def mobile_app_notify_services(self) -> List[str]:
+        """Get a list of notify services associated with mobile devices"""
+
+        services = []
+
+        for device in cast(List[str], self.person_entry[CONF_DEVICE_TRACKERS]):
+            enhanced_entity = EnhancedEntity(device)
+            if (
+                enhanced_entity.entity_entry is not None
+                and enhanced_entity.entity_entry.platform == "mobile_app"
+            ):
+                service_id = f"notify.mobile_app_{enhanced_entity.device_id}"
+                if get_hass().services.has_service(*service_id.split(".")):
+                    services.append(service_id)
+
+        return services
+
+    def _get_person_settings(
+        self, person_settings: Optional[PersonSettingsEntry] = None
+    ) -> PersonSettingsEntry:
+        """If the settings are None find the settings and provide an empty dictionary if None."""
+
+        settings = person_settings
+        if settings is None:
+            settings = get_base().persons.get(self.id)
+
+        return settings if settings is not None else {}
+
+    def _get_person_state(self, person_state: Optional[State] = None) -> State:
+        """If the state is None, find the state."""
+
+        state = person_state
+        if state is None:
+            state = get_hass().states.get(f"person.{self.id}")
+
+        return state
+
+    def _get_person_entry(
+        self, person_entry: Optional[PersonEntry] = None
+    ) -> PersonEntry:
+        """If the entry is None, find the entry if it exists."""
+
+        entry = person_entry
+        if entry is None:
+            registry: PersonStorageCollection = get_hass().data[PLATFORM_PERSON][1]
+            for person in cast(Iterable[PersonEntry], registry.async_items()):
+                if person[CONF_ID] == self.id:
+                    return person
+
+        return entry
+
+    def __getitem__(self, item: str) -> Any:
+        """Get and attribute, needed for Jinja templates."""
+
+        return getattr(self, item)
+
+    def __repr__(self):
+        """Representation of an EnhancedPerson."""
+
+        return (
+            f"<EnhancedPerson id={self.id}, "
+            f"name={self.name}, "
+            f"sort_order={self.sort_order}, "
+            f"visible={self.visible}, "
+            f"mobile_app_notify_services=[{', '.join(self.mobile_app_notify_services)}]>"
+        )
+
+    def as_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "sort_order": self.sort_order,
+            "visible": self.visible,
+            "mobile_app_notify_services": self.mobile_app_notify_services,
         }
 
 
@@ -438,7 +578,7 @@ def get_areas(
 
 def get_entities(
     entity_id: str = None, include_hidden: bool = False, include_disabled: bool = False
-) -> List[EnhancedEntity]:
+) -> Union[EnhancedEntity, List[EnhancedEntity]]:
     """Get all or a single area."""
 
     if entity_id is not None:
@@ -453,3 +593,25 @@ def get_entities(
             entities.append(enhanced_entity)
 
     return entities
+
+
+def get_persons(
+    person_id: str = None, include_hidden: bool = False
+) -> Union[EnhancedPerson, List[EnhancedPerson]]:
+    """Get all or a single person."""
+
+    if person_id is not None:
+        return EnhancedPerson(person_id)
+
+    persons = []
+    for person in cast(
+        PersonRegistry,
+        cast(
+            PersonStorageCollection, get_hass().data[PLATFORM_PERSON][1]
+        ).async_items(),
+    ):
+        enhanced_person = EnhancedPerson(id=person["id"], person_entry=person)
+        if include_hidden or enhanced_person.visible:
+            persons.append(enhanced_person)
+
+    return persons

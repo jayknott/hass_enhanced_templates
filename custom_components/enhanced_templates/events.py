@@ -8,8 +8,13 @@ from .const import (
     EVENT_AREAS_CHANGED,
     EVENT_AREA_SETTINGS_CHANGED,
     EVENT_ENTITY_SETTINGS_CHANGED,
+    EVENT_PERSON_SETTINGS_CHANGED,
 )
-from .settings import update_area_settings, update_entity_settings
+from .settings import (
+    update_area_settings,
+    update_entity_settings,
+    update_person_settings,
+)
 from .share import get_hass
 
 
@@ -21,6 +26,7 @@ async def setup_events() -> None:
     listen(EVENT_AREA_REGISTRY_UPDATED, handle_area_registry_updated)
     listen(EVENT_AREA_SETTINGS_CHANGED, handle_area_settings_changed)
     listen(EVENT_ENTITY_SETTINGS_CHANGED, handle_entity_settings_changed)
+    listen(EVENT_PERSON_SETTINGS_CHANGED, handle_person_settings_changed)
 
 
 async def handle_area_registry_updated(event: Event) -> None:
@@ -40,3 +46,9 @@ async def handle_entity_settings_changed(event: Event) -> None:
     """Handle when entity settings have been updated."""
 
     await update_entity_settings()
+
+
+async def handle_person_settings_changed(event: Event) -> None:
+    """Handle when person settings have been updated."""
+
+    await update_person_settings()

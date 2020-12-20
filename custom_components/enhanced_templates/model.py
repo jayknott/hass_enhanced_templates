@@ -1,6 +1,6 @@
 """Base Integration class."""
 import logging
-from typing import Dict, Iterable, Optional, TypedDict
+from typing import Dict, Iterable, List, Optional, TypedDict
 
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.area_registry import AreaEntry
@@ -36,6 +36,31 @@ class EntitySettingsEntry(TypedDict, total=False):
 EntitySettingsRegistry = Dict[str, EntitySettingsEntry]
 
 
+class PersonSettingsEntry(TypedDict, total=False):
+    """Model for person settings stored in the store."""
+
+    name: str
+    original_name: str
+    sort_order: int
+    visible: bool
+
+
+PersonSettingsRegistry = Dict[str, PersonSettingsEntry]
+
+
+class PersonEntry(TypedDict, total=False):
+    """Model to mimic the data in the person registry in HA."""
+
+    id: str
+    name: str
+    user_id: Optional[str]
+    device_trackers: List[str]
+    picture: Optional[str]
+
+
+PersonRegistry = Iterable[PersonEntry]
+
+
 class Configuration:
     """Configuration class."""
 
@@ -51,6 +76,8 @@ class IntegrationBase:
     log = logging.getLogger(f"custom_components.{DOMAIN}")
 
     area_registry: Iterable[AreaEntry] = []
-    areas: AreaSettingsRegistry = []
+    areas: AreaSettingsRegistry = {}
     configuration: Configuration = None
-    entities: EntitySettingsRegistry = []
+    entities: EntitySettingsRegistry = {}
+    person_registry: Iterable[PersonEntry] = []
+    persons: PersonSettingsRegistry = {}

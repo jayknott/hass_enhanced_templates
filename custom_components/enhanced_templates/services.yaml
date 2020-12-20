@@ -14,7 +14,7 @@ set_area:
       description: "Change the sort order for the area."
       example: 1
     visible:
-      description: "Show the area in the rooms grid."
+      description: "Show the area in Lovelace dashboards."
       example: False
 set_entity:
   description: "Update the settings for an entity."
@@ -32,6 +32,21 @@ set_entity:
       description: "The type of device this entity represents."
       example: "light"
     visible:
-      description: "Show the entity in the room pages."
+      description: "Show the entity on Lovelace dashboards."
+      example: False
+set_person:
+  description: "Update the settings for a person."
+  fields:
+    id:
+      description: "Person Id to update"
+      example: "jason"
+    name:
+      description: "The new name of the person."
+      example: "Jason"
+    sort_order:
+      description: "Change the sort order for the person."
+      example: 1
+    visible:
+      description: "Show the person on Lovelace dashboards."
       example: False
 

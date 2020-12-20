@@ -20,6 +20,7 @@ PLATFORM_INPUT_BOOLEAN = "input_boolean"
 PLATFORM_INPUT_NUMBER = "input_number"
 PLATFORM_INPUT_SELECT = "input_select"
 PLATFORM_INPUT_TEXT = "input_text"
+PLATFORM_PERSON = "person"
 
 BUILT_IN_AREA_ICON = "area_icon"
 BUILT_IN_AREA_NAME = "area_name"
@@ -77,6 +78,8 @@ CONF_ORIGINAL_AREA_ID = "original_area_id"
 CONF_ORIGINAL_ENTITY_TYPE = "original_entity_type"
 CONF_ORIGINAL_NAME = "original_name"
 CONF_ORIGINAL_TYPE = "original_type"
+CONF_PERSON = "person"
+CONF_PERSONS = "persons"
 CONF_REMOVE = "remove"
 CONF_SECURITY = "security"
 CONF_SELECTED_AREA = "selected_area"
@@ -98,6 +101,7 @@ EVENT_SETTINGS_CHANGED = f"{DOMAIN}_settings_changed"
 EVENT_AREA_SETTINGS_CHANGED = f"{DOMAIN}_area_settings_changed"
 EVENT_AREAS_CHANGED = f"{DOMAIN}_areas_changed"
 EVENT_ENTITY_SETTINGS_CHANGED = f"{DOMAIN}_entity_settings_changed"
+EVENT_PERSON_SETTINGS_CHANGED = f"{DOMAIN}_person_settings_changed"
 EVENT_TRIGGER_AREA_AUTOMATIONS = f"{DOMAIN}_trigger_area_automations"
 EVENT_TRIGGER_ENTITY_AUTOMATIONS = f"{DOMAIN}_trigger_entity_automations"
 
@@ -105,9 +109,11 @@ LOVELACE = "lovelace"
 
 SERVICE_SET_AREA = "set_area"
 SERVICE_SET_ENTITY = "set_entity"
+SERVICE_SET_PERSON = "set_person"
 SERVICE_IDS = {
     SERVICE_SET_AREA: f"{DOMAIN}.{SERVICE_SET_AREA}",
     SERVICE_SET_ENTITY: f"{DOMAIN}.{SERVICE_SET_ENTITY}",
+    SERVICE_SET_PERSON: f"{DOMAIN}.{SERVICE_SET_PERSON}",
 }
 
 TRANSLATIONS_PATH = "translations/"

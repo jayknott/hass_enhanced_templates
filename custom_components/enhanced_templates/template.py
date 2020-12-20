@@ -11,7 +11,7 @@ from homeassistant.helpers.template import (
     TemplateEnvironment,
 )
 
-from .registry import get_areas, get_entities
+from .registry import get_areas, get_entities, get_persons
 from .share import get_hass
 
 
@@ -46,6 +46,7 @@ async def setup_template() -> None:
     # Add custom globals
     jinja.globals["areas"] = AreasTemplate()
     jinja.globals["entities"] = EntitiesTemplate()
+    jinja.globals["persons"] = PersonsTemplate()
     jinja.globals["service_exists"] = service_exists
 
 
@@ -192,6 +193,48 @@ class EntitiesTemplate:
         """Representation of all areas."""
 
         return "<template AllEntities>"
+
+    def _create_template_listener(self):
+        pass
+
+        # TODO: Figure out how to listen for changes and update entities that
+        #   use this template.
+
+
+class PersonsTemplate:
+    """Class to expose all enhanced persons."""
+
+    def __getattr__(
+        self,
+        person_id: Optional[str] = None,
+        include_hidden: bool = False,
+    ):
+        """Return all persons."""
+
+        return get_persons(person_id, include_hidden)
+
+    __getitem__ = __getattr__
+
+    def __iter__(self):
+        self._create_template_listener()
+        return iter(get_persons())
+
+    def __len__(self):
+        self._create_template_listener()
+        return len(get_persons())
+
+    def __call__(
+        self,
+        person_id: Optional[str] = None,
+        include_hidden: bool = False,
+    ):
+        self._create_template_listener()
+        return self.__getattr__(person_id, include_hidden)
+
+    def __repr__(self) -> str:
+        """Representation of all areas."""
+
+        return "<template AllPersons>"
 
     def _create_template_listener(self):
         pass
