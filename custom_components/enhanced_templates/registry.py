@@ -437,6 +437,12 @@ class EnhancedPerson:
         self.person_entry = self._get_person_entry(person_entry)
 
     @property
+    def entity_id(self) -> str:
+        """Entity ID of the person entity."""
+
+        return self.person_state.entity_id
+
+    @property
     def name(self) -> str:
         """Name of the person from the HA person registry."""
 
