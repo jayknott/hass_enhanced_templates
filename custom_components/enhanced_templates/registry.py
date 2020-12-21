@@ -85,7 +85,7 @@ class EnhancedArea:
     def name(self) -> str:
         """Name of the area, from settings first and then the HA area registry."""
 
-        return self.area_settings.get(CONF_NAME, self.area_entry.name)
+        return self.area_settings.get(CONF_NAME, self.original_name)
 
     @property
     def original_name(self) -> str:
@@ -440,13 +440,13 @@ class EnhancedPerson:
     def name(self) -> str:
         """Name of the person from the HA person registry."""
 
-        return self.person_entry.get(CONF_NAME)
+        return self.person_entry.get(CONF_NAME, self.original_name)
 
     @property
     def original_name(self) -> str:
         """Name of the person from th HA area registry."""
 
-        return self.person_entry.name
+        return self.person_entry.get(CONF_NAME)
 
     @property
     def sort_order(self) -> int:
@@ -529,6 +529,7 @@ class EnhancedPerson:
         return (
             f"<EnhancedPerson id={self.id}, "
             f"name={self.name}, "
+            f"original_name={self.original_name}, "
             f"sort_order={self.sort_order}, "
             f"visible={self.visible}, "
             f"mobile_app_notify_services=[{', '.join(self.mobile_app_notify_services)}]>"
@@ -538,6 +539,7 @@ class EnhancedPerson:
         return {
             "id": self.id,
             "name": self.name,
+            "original_name": self.original_name,
             "sort_order": self.sort_order,
             "visible": self.visible,
             "mobile_app_notify_services": self.mobile_app_notify_services,
