@@ -534,6 +534,7 @@ class EnhancedPerson:
 
         return (
             f"<EnhancedPerson id={self.id}, "
+            f"entity_id={self.entity_id}, "
             f"name={self.name}, "
             f"original_name={self.original_name}, "
             f"sort_order={self.sort_order}, "
@@ -544,6 +545,7 @@ class EnhancedPerson:
     def as_dict(self):
         return {
             "id": self.id,
+            "entity_id": self.entity_id,
             "name": self.name,
             "original_name": self.original_name,
             "sort_order": self.sort_order,
