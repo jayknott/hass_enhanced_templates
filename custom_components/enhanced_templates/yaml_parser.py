@@ -42,7 +42,7 @@ async def setup_yaml_parser() -> None:
 
 
 def load_yaml(
-    fname: str, secrets: hass_loader.Secrets | None = None, args={}
+    fname: str, secrets: Union[hass_loader.Secrets, None] = None, args={}
 ) -> hass_loader.JSON_TYPE:
     """Load a YAML file."""
 
@@ -50,7 +50,7 @@ def load_yaml(
 
 
 def parse_yaml(
-    fname: str, secrets: hass_loader.Secrets | None = None, args={}
+    fname: str, secrets: Union[hass_loader.Secrets, None] = None, args={}
 ) -> hass_loader.JSON_TYPE:
     """Parse a YAML file."""
 
