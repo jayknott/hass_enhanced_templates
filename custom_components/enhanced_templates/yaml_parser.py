@@ -41,13 +41,17 @@ async def setup_yaml_parser() -> None:
     EnhancedLoader.add_constructor("!file", _uncache_file)
 
 
-def load_yaml(fname: str, args: Dict[str, Any] = {}) -> LoadedYAML:
+def load_yaml(
+    fname: str, secrets: hass_loader.Secrets | None = None, args={}
+) -> hass_loader.JSON_TYPE:
     """Load a YAML file."""
 
-    return parse_yaml(fname, args)
+    return parse_yaml(fname, secrets)
 
 
-def parse_yaml(fname: str, args: Dict[str, Any] = {}) -> LoadedYAML:
+def parse_yaml(
+    fname: str, secrets: hass_loader.Secrets | None = None, args={}
+) -> hass_loader.JSON_TYPE:
     """Parse a YAML file."""
 
     template: str = ""
@@ -62,16 +66,17 @@ def parse_yaml(fname: str, args: Dict[str, Any] = {}) -> LoadedYAML:
             jinja: TemplateEnvironment = get_hass().data.get(_ENVIRONMENT)
             template = jinja.get_template(fname).render({**args})
             stream = io.StringIO(template)
-            stream.name = fname
 
-            return hass_loader.yaml.load(stream, Loader=EnhancedLoader) or OrderedDict()
         else:
-            return (
-                hass_loader.yaml.load(
-                    open(fname, encoding="utf-8"), Loader=EnhancedLoader
-                )
-                or OrderedDict()
+            stream = open(fname, encoding="utf-8")
+
+        stream.name = fname
+        return (
+            hass_loader.yaml.load(
+                stream, Loader=lambda stream: EnhancedLoader(stream, secrets)
             )
+            or OrderedDict()
+        )
 
     except hass_loader.yaml.YAMLError as exc:
         get_log().error(f"{str(exc)}: {template}")
@@ -91,7 +96,7 @@ def process_node(
         value, args, *_ = loader.construct_sequence(node)
 
     fname = os.path.abspath(os.path.join(os.path.dirname(loader.name), value))
-    return [fname, args]
+    return [fname, None, args]
 
 
 def _include_yaml(loader: EnhancedLoader, node: hass_loader.yaml.Node) -> LoadedYAML:
@@ -114,7 +119,7 @@ def _include_dir_list_yaml(
     node_values = process_node(loader, node)
     loc: str = os.path.join(os.path.dirname(loader.name), node_values[0])
     return [
-        load_yaml(f, node_values[1])
+        load_yaml(f, None, node_values[1])
         for f in hass_loader._find_files(loc, "*.yaml")
         if os.path.basename(f) != hass_loader.SECRET_YAML
     ]
@@ -131,7 +136,7 @@ def _include_dir_merge_list_yaml(
     for fname in hass_loader._find_files(loc, "*.yaml"):
         if os.path.basename(fname) == hass_loader.SECRET_YAML:
             continue
-        loaded_yaml = load_yaml(fname, node_values[1])
+        loaded_yaml = load_yaml(fname, None, node_values[1])
         if isinstance(loaded_yaml, list):
             merged_list.extend(loaded_yaml)
     return hass_loader._add_reference(merged_list, loader, node)
@@ -149,7 +154,7 @@ def _include_dir_named_yaml(
         filename = os.path.splitext(os.path.basename(fname))[0]
         if os.path.basename(fname) == hass_loader.SECRET_YAML:
             continue
-        mapping[filename] = load_yaml(fname, node_values[1])
+        mapping[filename] = load_yaml(fname, None, node_values[1])
     return hass_loader._add_reference(mapping, loader, node)
 
 
