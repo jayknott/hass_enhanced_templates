@@ -66,11 +66,11 @@ def parse_yaml(
             jinja: TemplateEnvironment = get_hass().data.get(_ENVIRONMENT)
             template = jinja.get_template(fname).render({**args})
             stream = io.StringIO(template)
+            stream.name = fname
 
         else:
             stream = open(fname, encoding="utf-8")
 
-        stream.name = fname
         return (
             hass_loader.yaml.load(
                 stream, Loader=lambda stream: EnhancedLoader(stream, secrets)
