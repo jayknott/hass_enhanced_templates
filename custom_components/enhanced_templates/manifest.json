@@ -4,6 +4,7 @@
   ],
   "domain": "enhanced_templates",
   "name": "Enhanced Templates",
+  "version": "0.1.1",
   "config_flow": true,
   "documentation": "https://github.com/jayknott/hass_enhanced_templates",
   "issue_tracker": "https://github.com/jayknott/hass_enhanced_templates/issues",

@@ -166,7 +166,7 @@ class EntitiesTemplate:
         include_hidden: bool = False,
         include_disabled: bool = False,
     ):
-        """Return all the areas."""
+        """Return all the entities."""
 
         return get_entities(entity_id, include_hidden, include_disabled)
 
@@ -190,7 +190,7 @@ class EntitiesTemplate:
         return self.__getattr__(entity_id, include_hidden, include_disabled)
 
     def __repr__(self) -> str:
-        """Representation of all areas."""
+        """Representation of all entities."""
 
         return "<template AllEntities>"
 

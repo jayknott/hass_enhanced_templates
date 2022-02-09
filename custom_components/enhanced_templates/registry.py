@@ -589,7 +589,7 @@ def get_areas(
 def get_entities(
     entity_id: str = None, include_hidden: bool = False, include_disabled: bool = False
 ) -> Union[EnhancedEntity, List[EnhancedEntity]]:
-    """Get all or a single area."""
+    """Get all or a single entity."""
 
     if entity_id is not None:
         return EnhancedEntity(entity_id)
