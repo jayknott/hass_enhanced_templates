@@ -446,7 +446,7 @@ class EnhancedPerson:
     def name(self) -> str:
         """Name of the person from the HA person registry."""
 
-        return self.person_entry.get(CONF_NAME, self.original_name)
+        return self.person_settings.get(CONF_NAME, self.original_name)
 
     @property
     def original_name(self) -> str:
